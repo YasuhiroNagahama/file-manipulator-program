@@ -8,6 +8,7 @@ class FileManipulator:
         self.input_path = ''
         self.output_path = ''
         self.iterations = 0
+        self.needle = ''
         self.new_string = ''
         self.command = ''
         self.command_map = {
@@ -54,6 +55,18 @@ class FileManipulator:
     def is_valid_path(self, file_path):
         return os.path.isfile(file_path)
 
+    def temp(self):
+        self.input_path = self.args[2]
+
+        if(self.command == 'copy' or self.command == 'reverse'):
+            self.output_path = self.args[3]
+        elif(self.command == 'duplicate-contents'):
+            # この場合はself.argsを数値型に変えるので、後ほど
+            self.iterations = self.args[3]
+        elif(self.command == 'replace_string'):
+            self.needle = self.args[3]
+            self.new_string = self.args[4]
+
     def parse_command(self):
         if (self.args[1] == 'help'):
             self.help()
@@ -72,6 +85,7 @@ class FileManipulator:
             return
 
         self.command = self.args[1]
+        self.temp()
         self.parse_command()
 
 
