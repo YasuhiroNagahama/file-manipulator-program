@@ -32,3 +32,11 @@ replace-string inputpath needle newstring
 
 --- replace-stringの説明 ---
 inputpath にあるファイルの内容から文字列 'needle' を検索し、'needle' の全てを 'newstring' に置き換えます。
+
+----- helpコマンド -----
+
+--- 使用形式 ---
+help
+
+--- helpの説明 ---
+File Manipulator Programの使用方法が閲覧できます。

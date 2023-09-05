@@ -1,18 +1,31 @@
 import sys
+import os
 
 
 class FileManipulator:
     def __init__(self):
+        self.args = []
         self.input_path = ''
         self.output_path = ''
         self.iterations = 0
         self.new_string = ''
         self.command = ''
-        self.commands = ['copy', 'reverse',
-                         'duplicate-contents', 'replace-string']
+        self.command_map = {
+            'copy': self.copy,
+            'help': self.help,
+            'reverse': self.reverse,
+            'duplicate-contents': self.duplicate_contents,
+            'replace-string': self.replace_string
+        }
+
+    def copy(self):
+        print()
+
+    def reverse(self):
+        print()
 
     # コマンドの説明をコンソールに出力するメソッド
-    def help():
+    def help(self):
         path_name = 'help.txt'
         contents = ''
 
@@ -21,45 +34,46 @@ class FileManipulator:
 
         print(contents)
 
-    def reserve():
+    def duplicate_contents(self):
+        print()
+
+    def replace_string(self):
         print()
 
     # コマンドが正しい長さか確認してブーリアン値で返すメソッド
-    def is_valid_length(self, args):
-        if args[1] == 'replace-string' and len(args) == 5:
-            return True
+    def is_valid_length(self):
+        if self.args[1] == 'replace-string':
+            return len(self.args) == 5
 
-        return len(args) == 4
+        return len(self.args) == 4
 
-    # コマンドがcommandsに存在するかブーリアン値で返すメソッド
-    def is_valid_command(self, command):
-        return command in self.commands
+    # コマンドがcommand_mapに存在するかブーリアン値で返すメソッド
+    def is_valid_command(self):
+        return self.command in self.command_map
 
-    # この関数に来た時点でインデックスが存在しないことはないはず
-    def execute_command(self):
-        if self.command == 'copy':
-            print('reverse')
-        elif self.command == 'reverse':
-            print('copy')
-        elif self.command == 'duplicate-contents':
-            print('duplicate-contents')
-        elif self.command == 'replace-string':
-            print('replace-string')
+    def is_valid_path(self, file_path):
+        return os.path.isfile(file_path)
 
-    # 入力されたコマンドを解析するメソッド
-    def parseInput(self):
-        args = sys.argv
-
-        if len(args) <= 1:
-            return print('正しい入力形式ではありません。')
-
-        self.command = args[1]
-
-        if (self.is_valid_command(self.command) and self.is_valid_length(args)):
-            self.execute_command()
+    def parse_command(self):
+        if (self.args[1] == 'help'):
+            self.help()
+        elif self.is_valid_command() and self.is_valid_length():
+            self.command_map[self.command]()
         else:
             print('正しい入力形式でない、もしくは、存在しないコマンドです。')
 
+    # 入力されたコマンドを解析するメソッド
+    def parse_input(self):
+        self.args = sys.argv
+
+        # python file-manipulator-programを除外
+        if len(self.args) <= 1:
+            print('コマンドを入力してください。')
+            return
+
+        self.command = self.args[1]
+        self.parse_command()
+
 
 file_manipulator_program = FileManipulator()
-file_manipulator_program.parseInput()
+file_manipulator_program.parse_input()
