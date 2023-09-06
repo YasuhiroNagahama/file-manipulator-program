@@ -18,34 +18,46 @@ class FileManipulator:
             'duplicate-contents': self.duplicate_contents,
             'replace-string': self.replace_string
         }
+        self.contents = ''
 
     def copy(self):
         if not self.is_valid_path(self.input_path) or not self.is_valid_path(self.output_path):
+            print('エラー: ファイルのパスが正しいか確認して下さい。')
             return
         
         print('copy')
 
     def reverse(self):
         if not self.is_valid_path(self.input_path) or not self.is_valid_path(self.output_path):
+            print('エラー: ファイルのパスが正しいか確認して下さい。')
             return
         print('reverse')
 
     def help(self):
         path_name = 'help.txt'
-        contents = ''
 
         with open(path_name) as f:
-            contents = f.read()
+            self.contents = f.read()
 
-        print(contents)
+        print(self.contents)
 
     def duplicate_contents(self):
         if not self.is_valid_path(self.input_path):
+            print('エラー: ファイルのパスが正しいか確認して下さい。')
             return
+
+        with open(self.input_path, 'r') as f:
+          self.contents = f.read()
+
+        with open(self.input_path, 'w') as f:
+          for i in self.iterations:
+              f.write(self.contents + self.contents)
+
         print('duplicate_contents')
 
     def replace_string(self):
         if not self.is_valid_path(self.input_path):
+          print('エラー: ファイルのパスが正しいか確認して下さい。')
           return
         print('replace_string')
 
@@ -74,8 +86,15 @@ class FileManipulator:
         if(self.command == 'copy' or self.command == 'reverse'):
             self.output_path = self.args[3]
         elif(self.command == 'duplicate-contents'):
-            # この場合はself.argsを数値型に変えるので、後ほど
-            self.iterations = self.args[3]
+          try:
+            n = int(self.args[3])
+            if n > 0:
+              self.iterations = n
+            else:
+              print("エラー: n を0より大きい正の整数にしてください。")
+
+          except ValueError:
+            print("エラー: n の値が数値に変換できない文字になっています。")
         elif(self.command == 'replace_string'):
             self.needle = self.args[3]
             self.new_string = self.args[4]
@@ -83,9 +102,9 @@ class FileManipulator:
     def parse_command(self):
         if self.is_valid_command() and self.is_valid_length():
             self.analyze_and_set_data()
-            self.command_map[self.command]()
+            # self.command_map[self.command]()
         else:
-            print('正しい入力形式でない、もしくは、存在しないコマンドです。')
+            print('エラー: 正しい入力形式でない、もしくは、存在しないコマンドです。')
 
     # 入力されたコマンドを解析するメソッド
     def parse_input(self):
@@ -93,7 +112,7 @@ class FileManipulator:
 
         # python file-manipulator-programを除外
         if len(self.args) <= 1:
-            print('コマンドを入力してください。')
+            print('エラー: コマンドを入力してください。')
             return
 
         # 上記のifに当てはまらなかったということはcommandが入力されているので、commandにargs[1]を代入する
@@ -103,3 +122,5 @@ class FileManipulator:
 
 file_manipulator_program = FileManipulator()
 file_manipulator_program.parse_input()
+
+# ファイルの形式は何でもいい
