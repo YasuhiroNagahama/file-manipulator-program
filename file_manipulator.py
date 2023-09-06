@@ -20,12 +20,16 @@ class FileManipulator:
         }
 
     def copy(self):
-        print()
+        if not self.is_valid_path(self.input_path) or not self.is_valid_path(self.output_path):
+            return
+        
+        print('copy')
 
     def reverse(self):
-        print()
+        if not self.is_valid_path(self.input_path) or not self.is_valid_path(self.output_path):
+            return
+        print('reverse')
 
-    # コマンドの説明をコンソールに出力するメソッド
     def help(self):
         path_name = 'help.txt'
         contents = ''
@@ -36,14 +40,20 @@ class FileManipulator:
         print(contents)
 
     def duplicate_contents(self):
-        print()
+        if not self.is_valid_path(self.input_path):
+            return
+        print('duplicate_contents')
 
     def replace_string(self):
-        print()
+        if not self.is_valid_path(self.input_path):
+          return
+        print('replace_string')
 
     # コマンドが正しい長さか確認してブーリアン値で返すメソッド
     def is_valid_length(self):
-        if self.args[1] == 'replace-string':
+        if self.args[1] == 'help':
+            return len(self.args == 2)
+        elif self.args[1] == 'replace-string':
             return len(self.args) == 5
 
         return len(self.args) == 4
@@ -52,10 +62,13 @@ class FileManipulator:
     def is_valid_command(self):
         return self.command in self.command_map
 
+    # ファイルパスが正しいかブーリアン値で返すメソッド
     def is_valid_path(self, file_path):
         return os.path.isfile(file_path)
 
-    def temp(self):
+    # 入力されたコマンドから、必要な情報をメンバ変数に保存するメソッド
+    def analyze_and_set_data(self):
+        # input_pathは全てのargsに存在している(今のところ)
         self.input_path = self.args[2]
 
         if(self.command == 'copy' or self.command == 'reverse'):
@@ -68,9 +81,8 @@ class FileManipulator:
             self.new_string = self.args[4]
 
     def parse_command(self):
-        if (self.args[1] == 'help'):
-            self.help()
-        elif self.is_valid_command() and self.is_valid_length():
+        if self.is_valid_command() and self.is_valid_length():
+            self.analyze_and_set_data()
             self.command_map[self.command]()
         else:
             print('正しい入力形式でない、もしくは、存在しないコマンドです。')
@@ -84,8 +96,8 @@ class FileManipulator:
             print('コマンドを入力してください。')
             return
 
+        # 上記のifに当てはまらなかったということはcommandが入力されているので、commandにargs[1]を代入する
         self.command = self.args[1]
-        self.temp()
         self.parse_command()
 
 
