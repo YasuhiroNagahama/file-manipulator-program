@@ -1,7 +1,6 @@
 import sys
 import os
 
-
 class FileManipulator:
     def __init__(self):
         self.args = []
@@ -21,16 +20,9 @@ class FileManipulator:
         self.contents = ''
 
     def copy(self):
-        if not self.is_valid_path(self.input_path) or not self.is_valid_path(self.output_path):
-            print('エラー: ファイルのパスが正しいか確認して下さい。')
-            return
-        
         print('copy')
 
     def reverse(self):
-        if not self.is_valid_path(self.input_path) or not self.is_valid_path(self.output_path):
-            print('エラー: ファイルのパスが正しいか確認して下さい。')
-            return
         print('reverse')
 
     def help(self):
@@ -42,23 +34,16 @@ class FileManipulator:
         print(self.contents)
 
     def duplicate_contents(self):
-        if not self.is_valid_path(self.input_path):
-            print('エラー: ファイルのパスが正しいか確認して下さい。')
-            return
+        # with open(self.input_path, 'r') as f:
+        #   self.contents = f.read()
 
-        with open(self.input_path, 'r') as f:
-          self.contents = f.read()
-
-        with open(self.input_path, 'w') as f:
-          for i in self.iterations:
-              f.write(self.contents + self.contents)
+        # with open(self.input_path, 'w') as f:
+        #   for i in self.iterations:
+        #       f.write(self.contents + self.contents)
 
         print('duplicate_contents')
 
     def replace_string(self):
-        if not self.is_valid_path(self.input_path):
-          print('エラー: ファイルのパスが正しいか確認して下さい。')
-          return
         print('replace_string')
 
     # コマンドが正しい長さか確認してブーリアン値で返すメソッド
@@ -78,49 +63,60 @@ class FileManipulator:
     def is_valid_path(self, file_path):
         return os.path.isfile(file_path)
 
+    # 現在メンバ変数に保存されているデータが正しいか確認するメソッド
+    def is_valid_data_type(self):
+        if(self.command == 'copy' or self.command == 'reverse'):
+           if self.is_valid_path(self.input_path) and self.is_valid_path(self.output_path):
+               return True
+           else:
+               print("input_path、または、output_pathのパスが正しくありません。")
+               return False
+        elif(self.command == 'duplicate-contents'):
+          try:
+            if not self.is_valid_path(self.input_path):
+                return False
+            
+            n = int(self.iterations)
+            if n > 0:
+                return True
+            else:
+                print('エラー: n を0より大きい正の整数にしてください。')
+                return False
+          except ValueError:
+            print('エラー: n の値が数値に変換できない文字になっています。')
+            return False
+
     # 入力されたコマンドから、必要な情報をメンバ変数に保存するメソッド
-    def analyze_and_set_data(self):
-        # input_pathは全てのargsに存在している(今のところ)
+    def set_data(self):
         self.input_path = self.args[2]
 
         if(self.command == 'copy' or self.command == 'reverse'):
             self.output_path = self.args[3]
         elif(self.command == 'duplicate-contents'):
-          try:
-            n = int(self.args[3])
-            if n > 0:
-              self.iterations = n
-            else:
-              print("エラー: n を0より大きい正の整数にしてください。")
-
-          except ValueError:
-            print("エラー: n の値が数値に変換できない文字になっています。")
+            self.iterations = self.args[3]
         elif(self.command == 'replace_string'):
             self.needle = self.args[3]
             self.new_string = self.args[4]
 
-    def parse_command(self):
+    def analyze_command(self):
         if self.is_valid_command() and self.is_valid_length():
-            self.analyze_and_set_data()
-            # self.command_map[self.command]()
+            self.set_data()
+            if self.is_valid_data_type():
+                self.command_map[self.command]()
         else:
             print('エラー: 正しい入力形式でない、もしくは、存在しないコマンドです。')
 
     # 入力されたコマンドを解析するメソッド
-    def parse_input(self):
+    def analyze_input(self):
         self.args = sys.argv
 
-        # python file-manipulator-programを除外
         if len(self.args) <= 1:
             print('エラー: コマンドを入力してください。')
             return
 
-        # 上記のifに当てはまらなかったということはcommandが入力されているので、commandにargs[1]を代入する
         self.command = self.args[1]
-        self.parse_command()
+        self.analyze_command()
 
 
 file_manipulator_program = FileManipulator()
-file_manipulator_program.parse_input()
-
-# ファイルの形式は何でもいい
+file_manipulator_program.analyze_input()
