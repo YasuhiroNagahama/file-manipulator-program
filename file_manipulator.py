@@ -4,17 +4,6 @@ import os
 from abc import ABC
 
 
-class CommandInterface(ABC):
-    def set_data(self):
-        pass
-
-    def is_valid_length(self):
-        pass
-
-    def is_valid_path(self, file_path):
-        pass
-
-
 class Help:
     def __init__(self, args: list):
         self.valid_length: int = 2
@@ -33,44 +22,58 @@ class Help:
 
             print(contents)
         else:
-            print('コマンドの入力形式が間違っています。')
+            print('エラー: コマンドの入力形式が間違っています。')
 
 
-class Reverse(CommandInterface):
+class Reverse:
     def __init__(self, args: list):
         self.valid_length: int = 4
         self.args: list = args
-        self.data_format: str = ''
         self.input_path: str = ''
         self.output_path: str = ''
 
     def is_valid_length(self):
         return len(self.args) == self.valid_length
 
+    def is_file(self, path):
+        return os.path.isfile(path)
+
     def set_path(self):
         self.input_path = self.args[2]
         self.output_path = self.args[3]
 
-    def is_exist_path(self, path):
-        return os.path.exists(path)
-
-    def is_file_path(self, file_path):
-        return os.path.isfile(file_path)
-
-    def run_command(self):
+    def is_valid_command(self):
         if not self.is_valid_length():
-            print('コマンドの入力形式が間違っています。')
-            return
+            print('\nエラー: コマンドの入力形式が間違っています。')
+            return False
 
         self.set_path()
 
-        if not self.is_exist_path(self.input_path):
-            print(self.input_path + 'は存在しません。')
+        if not self.is_file(self.input_path):
+            print('\nエラー: ' + self.input_path + ' は存在しないか、ファイルではありません。')
+            return False
+        if not self.is_file(self.output_path):
+            print('\nエラー: ' + self.output_path + ' は存在しないか、ファイルではありません。')
+            return False
+
+        return True
+
+    def is_overwrite_allowed(self):
+        overwrite_permission = input('\n上書きを許可しますか？ (y/n): ')
+
+        while overwrite_permission not in ["y", "n", 'Y', 'N']:
+            print("\nエラー: 無効な入力です。'y' または 'n' を入力してください。")
+            overwrite_permission = input('\n上書きを許可しますか？ (y/n): ')
+
+        if overwrite_permission == 'n' or overwrite_permission == 'N':
+            print('\n処理を中止しました。')
+            return False
+
+        return True
+
+    def run_command(self):
+        if not self.is_valid_command() or not self.is_overwrite_allowed():
             return
-        if not self.is_exist_path(self.output_path):
-            print(self.output_path + 'は存在しません。')
-            return
-        
 
         contents = ''
 
@@ -78,16 +81,15 @@ class Reverse(CommandInterface):
             file_contents = f.read()
             contents = file_contents[::-1]
 
-        # 上書きしてもよいか確認する条件分岐
-        # フォルダの場合どうするか？
         with open(self.output_path, "w") as f:
             f.write(contents)
 
-        print(contents)
+        print('\n処理を完了しました。')
 
 
 class Copy:
     def __init__(self, args: list):
+        self.valid_length: int = 4
         self.args: list = args
         self.input_path: str = ''
         self.output_path: str = ''
@@ -128,11 +130,9 @@ class FileManipulator():
             'replace-string': ReplaceString
         }
 
-    # 有効なコマンドかどうかをブーリアン値で返すメソッド
     def is_exist_command(self):
         return self.command in self.command_class_map
 
-    # 入力されたコマンドを解析するメソッド
     def analyze_input(self):
         self.args = sys.argv
 
