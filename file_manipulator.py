@@ -20,7 +20,7 @@ def is_overwrite_allowed() -> bool:
     return True
 
 
-def is_file(path) -> bool:
+def is_file(path: str) -> bool:
     return os.path.isfile(path)
 
 
