@@ -16,10 +16,6 @@ OSとやりとりするプロジェクトです。file_manipulator.pyファイ�
 
 * **replace-stringコマンド** -- inputpath にあるファイルの内容から文字列 'needle' を検索し、'needle' の全てを 'newstring' に置き換えます。
 
-# Demo
-
-
-
 # Features
 
 * オブジェクト指向プログラミングを行いました。
