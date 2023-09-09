@@ -69,8 +69,6 @@ class Reverse:
         with open(self.output_path, "w") as f:
             f.write(reverse_contents)
 
-        print('\n処理を完了しました。')
-
 
 class Copy:
     def __init__(self, args: list):
@@ -105,8 +103,6 @@ class Copy:
         with open(self.output_path, "w") as f:
             f.write(original_contents)
 
-        print('\n処理を完了しました。')
-
 
 class DuplicateContents:
     def __init__(self, args: list):
@@ -140,14 +136,14 @@ class DuplicateContents:
         if not self.is_valid_iterations():
             return False
 
-        self.set_iterations()
-
         return True
 
     def run_command(self):
         self.set_path()
         if not self.is_valid_command() or not is_overwrite_allowed():
             return
+
+        self.set_iterations()
 
         original_contents = ''
         repeated_contents = ''
@@ -159,8 +155,6 @@ class DuplicateContents:
             for i in range(0, self.iterations):
                 repeated_contents += original_contents
             f.write(repeated_contents)
-
-        print('\n処理を完了しました。')
 
 
 class ReplaceString:
@@ -191,18 +185,19 @@ class ReplaceString:
         if not self.is_valid_command() or not is_overwrite_allowed():
             return
 
+        self.set_needle()
+        self.set_new_string()
+
         original_contents = ''
-        contents = ''
+        new_contents = ''
 
         with open(self.input_path, "r") as f:
-            original = f.read()
+            original_contents = f.read()
+            new_contents = original_contents.replace(
+                self.needle, self.new_string)
 
         with open(self.input_path, "w") as f:
-            for i in range(0, self.iterations):
-                contents += original
-            f.write(contents)
-
-        print('\n処理を完了しました。')
+            f.write(new_contents)
 
 
 class FileManipulator():
