@@ -1,8 +1,6 @@
 import sys
 import os
 
-from abc import ABC
-
 
 def is_overwrite_allowed() -> bool:
     overwrite_permission = input(
