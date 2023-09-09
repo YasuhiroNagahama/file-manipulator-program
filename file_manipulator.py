@@ -27,7 +27,7 @@ class Help:
         path_name: str = 'help.txt'
         contents: str = ''
 
-        with open(path_name, "r") as f:
+        with open(path_name, "r", encoding="utf-8") as f:
             contents = f.read()
             print(contents)
 
